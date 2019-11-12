@@ -1,4 +1,4 @@
-import { isFunction } from './helpers';
+import { isFunction, assert } from './helpers';
 
 function createReducer(handlers, initialState, beforeHandle) {
   const TAG = {};
@@ -6,71 +6,79 @@ function createReducer(handlers, initialState, beforeHandle) {
   Object.freeze(handlers);
 
   // TAG: To execute current handler only if it was dispatched from the related dispatcher
-  // action.handlers[action.type]: Getting handler reference this way turned out to be the best in performance
   // Writing this as two separate functions for the minor increase in performance
-  const reducer = beforeHandle ? function(state = initialState, action) {
-    if(action.tag === TAG) {
-      state = beforeHandle(state, action.payload, function (state, payload) {
-        return action.handlers[action.name](state, payload);
+  const reducer = beforeHandle ? function(state = initialState, actionObj) {
+    if(actionObj.tag === TAG) {
+      state = beforeHandle(state, actionObj.payload, function (state, payload) {
+        return actionObj.handler.call(actionObj.thisArg, state, payload);
       });
     }
     return state;
-  } : function(state = initialState, action) {
-    if(action.tag === TAG) {
-      state = action.handlers[action.name](state, action.payload);
+  } : function(state = initialState, actionObj) {
+    if(actionObj.tag === TAG) {
+      state = actionObj.handler.call(actionObj.thisArg, state, actionObj.payload);
     }
     return state;
   };
 
-  reducer.getHandlers = createGetHandlers(handlers, TAG);
+  reducer.getActions = createActionsGetter(handlers, TAG);
 
   return reducer;
 }
 
-const TYPE_PREFIX = "X_REDUCER_"; // To prevent type name conflicts when used alongside normal reducers
-function createDispatchers(handlers) {
-  let dispatchers = {};
+const TYPE_PREFIX = "X_REDUCER"; // To prevent type name conflicts when used alongside normal reducers
+function createAction(handler, type = TYPE_PREFIX) {
+  assert(isFunction(handler), "Handler is not a function!");
 
-  if(!handlers || Object.keys(handlers).length === 0) {
-    throw new Error("Reducer creation failed. No handlers found!");
-  }
+  function action(payload) {
+    this.dispatch({
+      type,
+      tag: this.tag,
+      handler,
+      thisArg: this.handlers,
+      payload
+    });
+  };
 
-  // Is there a better way than iterating!? Proxy could help, but comes with a performance cost.
-  Object.keys(handlers).forEach(name => {
-    if(!isFunction(handlers[name])) {
-      throw new TypeError(`Handler '${name}' is not a function!`);
-    }
-
-    const type = TYPE_PREFIX + name.toUpperCase();
-    dispatchers[name] = function(payload) {
-      this.dispatch({
-        type,
-        name,
-        tag: this.tag,
-        handlers: this.handlers,
-        handler: this.handlers[name],
-        payload
-      });
-    };
-  });
-
-  return dispatchers;
+  action.isWrapped = true;
+  return action;
 }
 
-function createGetHandlers(handlers, tag) {
-  const dispatchers = createDispatchers(handlers);
+function mapHandlersToActions(handlers) {
+  assert(handlers && Object.keys(handlers).length !== 0, "Reducer creation failed. No handlers found!");
+
+  let actions = {};
+  let pureHandlers = {};
+  Object.keys(handlers).forEach(name => {
+    const handler = handlers[name];
+    assert(isFunction(handler), `Handler '${name}' is not a function!`);
+
+    const type = `${TYPE_PREFIX}_${name.toUpperCase()}`;
+    if(handler.isWrapped) {
+      actions[name] = handler;
+    } else {
+      actions[name] = createAction(handler, type);
+      pureHandlers[name] = handler;
+    }
+  });
+  return {actions, pureHandlers};
+}
+
+function createActionsGetter(handlers, tag) {
+  const {actions, pureHandlers} = mapHandlersToActions(handlers);
 
   return function(dispatch) {
-    if(!isFunction(dispatch)) {
-      throw new TypeError("Invalid dispatch!");
-    }
+    assert(isFunction(dispatch), "Invalid dispatch function reference!");
 
-    let newHandlers = Object.create(dispatchers);
-    newHandlers.dispatch = dispatch;
-    newHandlers.tag = tag;
-    newHandlers.handlers = handlers;
-    return newHandlers;
+    let actionsObj = Object.create(actions);
+    actionsObj.dispatch = dispatch;
+    actionsObj.tag = tag;
+    actionsObj.handlers = pureHandlers;
+    return actionsObj;
   };
 }
 
-export { createReducer };
+export {
+  createReducer,
+  createAction as action,
+};

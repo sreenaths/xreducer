@@ -2,6 +2,8 @@
 
 import { createReducer } from '../index';
 
+//-- Positive tests ---------------------------------------------------------------------
+
 test('Positive tests: Function addition', () => {
   let handlers = {
     inc: () => {},

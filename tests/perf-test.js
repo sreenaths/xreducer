@@ -28,10 +28,10 @@ function xReducerPerfTest() {
     inc: state => state + 1,
   }, 0);
   let store = createStore(reducer);
-  let handlers = reducer.getHandlers(store.dispatch);
+  let actions = reducer.getActions(store.dispatch);
 
   for(var i = 0; i < ITERATIONS; i++) {
-    handlers.inc(1);
+    actions.inc(1);
   }
   return store.getState();
 }

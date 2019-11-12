@@ -4,6 +4,8 @@ import produce from "immer";
 
 import initialStateObj from '../data/users';
 
+//-- Positive tests ---------------------------------------------------------------------
+
 test('Positive tests: Updating an object state with immer', () => {
 
   const reducerHandlers = {
@@ -21,12 +23,12 @@ test('Positive tests: Updating an object state with immer', () => {
 
   let reducer = createReducer(reducerHandlers, initialStateObj, immerBeforeHandle);
   let store = createStore(reducer);
-  let handlers = reducer.getHandlers(store.dispatch);
+  let actions = reducer.getActions(store.dispatch);
 
   let subscriptionCalls = 0;
   store.subscribe(() => subscriptionCalls++);
 
-  handlers.addUser({
+  actions.addUser({
     name: "Kesav",
     age: 85,
     code: "COH",
@@ -38,7 +40,7 @@ test('Positive tests: Updating an object state with immer', () => {
   expect(store.getState().maxAge).toBe(85);
   expect(store.getState().cities).toBe(initialStateObj.cities);
 
-  handlers.addUser({
+  actions.addUser({
     name: "Sid",
     age: 28,
     code: "SFO",
