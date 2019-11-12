@@ -1,0 +1,32 @@
+{
+  "users": [{
+    "name": "Gopi",
+    "age": 66,
+    "cityCode": "COH"
+  }, {
+    "name": "Jaya",
+    "age": 55,
+    "cityCode": "BNG"
+  }, {
+    "name": "Athira",
+    "age": 26,
+    "cityCode": "SFO"
+  }],
+  "maxAge": 66,
+  "cities": [{
+    "code": "BNG",
+    "name": "Bangalore",
+    "state": "Karnataka",
+    "country": "India"
+  }, {
+    "code": "SFO",
+    "name": "San Francisco",
+    "state": "California",
+    "country": "USA"
+  }, {
+    "code": "COH",
+    "name": "Cochin",
+    "state": "Kerala",
+    "country": "India"
+  }]
+}

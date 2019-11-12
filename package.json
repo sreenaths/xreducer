@@ -1,10 +1,11 @@
 {
   "name": "xreducer",
   "version": "0.0.1",
-  "description": "A Redux addon that attempts to remove the Redux boilerplate!",
+  "description": "A concise way to create Redux reducers!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:perf": "babel-node ./tests/perf-test.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,19 @@
   "bugs": {
     "url": "https://github.com/sreenaths/xreducer/issues"
   },
-  "homepage": "https://github.com/sreenaths/xreducer#readme"
+  "compilerOptions": {
+    "target": "es6"
+  },
+  "homepage": "https://github.com/sreenaths/xreducer#readme",
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "babel-jest": "^24.9.0",
+    "immer": "^5.0.0",
+    "immutability-helper": "^3.0.1",
+    "jest": "^24.9.0",
+    "redux": "^4.0.4"
+  },
+  "dependencies": {}
 }
