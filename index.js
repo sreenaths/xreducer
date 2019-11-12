@@ -1,73 +1,76 @@
 import { isFunction } from './helpers';
 
-function createReducer(handlers, defaultState, beforeHandle) {
-  const VALIDATOR = {};
+function createReducer(handlers, initialState, beforeHandle) {
+  const TAG = {};
 
   Object.freeze(handlers);
-  handlers = Object.assign({}, handlers);
+
+  // TAG: To execute current handler only if it was dispatched from the related dispatcher
+  // action.handlers[action.type]: Getting handler reference this way turned out to be the best in performance
+  // Writing this as two separate functions for the minor increase in performance
+  const reducer = beforeHandle ? function(state = initialState, action) {
+    if(action.tag === TAG) {
+      state = beforeHandle(state, action.payload, function (state, payload) {
+        return action.handlers[action.name](state, payload);
+      });
+    }
+    return state;
+  } : function(state = initialState, action) {
+    if(action.tag === TAG) {
+      state = action.handlers[action.name](state, action.payload);
+    }
+    return state;
+  };
+
+  reducer.getHandlers = createGetHandlers(handlers, TAG);
+
+  return reducer;
+}
+
+const TYPE_PREFIX = "X_REDUCER_"; // To prevent type name conflicts when used alongside normal reducers
+function createDispatchers(handlers) {
+  let dispatchers = {};
 
   if(!handlers || Object.keys(handlers).length === 0) {
     throw new Error("Reducer creation failed. No handlers found!");
   }
 
+  // Is there a better way than iterating!? Proxy could help, but comes with a performance cost.
   Object.keys(handlers).forEach(name => {
     if(!isFunction(handlers[name])) {
       throw new TypeError(`Handler '${name}' is not a function!`);
     }
+
+    const type = TYPE_PREFIX + name.toUpperCase();
+    dispatchers[name] = function(payload) {
+      this.dispatch({
+        type,
+        name,
+        tag: this.tag,
+        handlers: this.handlers,
+        handler: this.handlers[name],
+        payload
+      });
+    };
   });
 
-  const reducer = function(state = defaultState, currentAction) {
-    // Execute current handler only if it was dispatched using xReducer
-    if(currentAction.validator === VALIDATOR && currentAction.handler) {
-      if(beforeHandle) {
-        state = beforeHandle(state, currentAction.payload, function (state, payload) {
-          return currentAction.handler.call(handlers, state, payload);
-        });
-      } else {
-        state = currentAction.handler.call(handlers, state, currentAction.payload);
-      }
-    }
-    return state;
-  };
+  return dispatchers;
+}
 
-  const TYPE = "REDUCER_ACTION";
-  const handlerGetter = function(obj, prop){
-    if(this.cache[prop]) {
-      return this.cache[prop];
-    }
+function createGetHandlers(handlers, tag) {
+  const dispatchers = createDispatchers(handlers);
 
-    const handler = obj[prop];
-    if(isFunction(handler)) {
-      const dispatch = this.dispatch;
-      return this.cache[prop] = function(payload) {
-        dispatch({
-          type: TYPE,
-          validator: VALIDATOR,
-          payload,
-          handler
-        });
-      };
-    }
-    return handler;
-  }
-
-  const getHandlers = function(dispatch) {
+  return function(dispatch) {
     if(!isFunction(dispatch)) {
-      throw new Error("Invalid dispatch!");
+      throw new TypeError("Invalid dispatch!");
     }
 
-    // TODO 1: Should we cache handler set using a WeakMap with dispatch as key?
-    // TODO 2: Should we go low tech and just loop through the handlers and create a new handlers object?
-
-    return new Proxy(handlers, {
-      dispatch,
-      cache: {},
-      get: handlerGetter
-    });
+    let newHandlers = Object.create(dispatchers);
+    newHandlers.dispatch = dispatch;
+    newHandlers.tag = tag;
+    newHandlers.handlers = handlers;
+    return newHandlers;
   };
-
-  reducer.getHandlers = getHandlers;
-  return reducer;
 }
 
 export { createReducer };
