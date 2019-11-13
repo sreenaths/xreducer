@@ -3,6 +3,9 @@ import { isFunction, assert } from './helpers';
 function createReducer(handlers, initialState, beforeHandle) {
   const TAG = {};
 
+  let lastState;
+  const getState = () => lastState;
+
   Object.freeze(handlers);
 
   // TAG: To execute current handler only if it was dispatched from the related dispatcher
@@ -13,15 +16,17 @@ function createReducer(handlers, initialState, beforeHandle) {
         return actionObj.handler.call(actionObj.thisArg, state, payload);
       });
     }
+    lastState = state;
     return state;
   } : function(state = initialState, actionObj) {
     if(actionObj.tag === TAG) {
       state = actionObj.handler.call(actionObj.thisArg, state, actionObj.payload);
     }
+    lastState = state;
     return state;
   };
 
-  reducer.getActions = createActionsGetter(handlers, TAG);
+  reducer.getActions = createActionsGetter(handlers, TAG, getState);
 
   return reducer;
 }
@@ -31,17 +36,32 @@ function createAction(handler, type = TYPE_PREFIX) {
   assert(isFunction(handler), "Handler is not a function!");
 
   function action(payload) {
-    this.dispatch({
+    this.__dispatch({
       type,
-      tag: this.tag,
+      tag: this.__reducerInfo.tag,
       handler,
-      thisArg: this.handlers,
+      thisArg: this.__reducerInfo.handlers,
       payload
     });
   };
 
   action.isWrapped = true;
   return action;
+}
+
+function createThunk(handler) {
+  assert(isFunction(handler), "Handler is not a function!");
+
+  function thunk(payload) {
+    const helpers = {
+      dispatch: this.__dispatch,
+      getState: this.__reducerInfo.getState,
+    };
+    return handler(this, payload, helpers);
+  };
+
+  thunk.isWrapped = true;
+  return thunk;
 }
 
 function mapHandlersToActions(handlers) {
@@ -64,21 +84,27 @@ function mapHandlersToActions(handlers) {
   return {actions, pureHandlers};
 }
 
-function createActionsGetter(handlers, tag) {
+function createActionsGetter(handlers, tag, getState) {
   const {actions, pureHandlers} = mapHandlersToActions(handlers);
+  const reducerInfo = {
+    tag,
+    getState,
+    handlers: pureHandlers,
+  };
 
   return function(dispatch) {
     assert(isFunction(dispatch), "Invalid dispatch function reference!");
 
     let actionsObj = Object.create(actions);
-    actionsObj.dispatch = dispatch;
-    actionsObj.tag = tag;
-    actionsObj.handlers = pureHandlers;
+    actionsObj.__dispatch = dispatch;
+    actionsObj.__reducerInfo = reducerInfo;
+
     return actionsObj;
   };
 }
 
 export {
   createReducer,
+  createThunk as thunk,
   createAction as action,
 };
