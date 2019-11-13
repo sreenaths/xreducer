@@ -6,20 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: test # will run `yarn test` command
-  perf-test:
-    name: Perf Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: borales/actions-yarn@v2.0.0
+      - name: Install Dependencies
+        uses: borales/actions-yarn@v2.0.0
         with:
           cmd: install
-      - uses: borales/actions-yarn@v2.0.0
+      - name: Run UTs
+        uses: borales/actions-yarn@v2.0.0
+        with:
+          cmd: test
+      - name: Run Perf Tests
+        uses: borales/actions-yarn@v2.0.0
         with:
           cmd: run test:perf
