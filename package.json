@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:perf": "babel-node ./tests/perf-test.js"
+    "test:perf": "babel-node ./tests/perfTest.js"
   },
   "repository": {
     "type": "git",

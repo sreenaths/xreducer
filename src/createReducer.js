@@ -4,10 +4,12 @@ import createAction, { TYPE_PREFIX } from './createAction';
 function createReducer(handlers, initialState, beforeHandle) {
   const TAG = {};
 
-  let lastState;
-  const getState = () => lastState;
+  let currentState;
+  const getState = () => currentState;
 
   Object.freeze(handlers);
+
+  assert(!beforeHandle || isFunction(beforeHandle), "beforeHandle passed is not a function!");
 
   // TAG: To execute current handler only if it was dispatched from the related dispatcher
   // Writing this as two separate functions for the minor increase in performance
@@ -17,13 +19,13 @@ function createReducer(handlers, initialState, beforeHandle) {
         return actionObj.handler.call(actionObj.thisArg, state, payload);
       });
     }
-    lastState = state;
+    currentState = state;
     return state;
   } : function(state = initialState, actionObj) {
     if(actionObj.tag === TAG) {
       state = actionObj.handler.call(actionObj.thisArg, state, actionObj.payload);
     }
-    lastState = state;
+    currentState = state;
     return state;
   };
 

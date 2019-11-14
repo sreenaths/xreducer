@@ -12,7 +12,7 @@ function executor(fun) {
 }
 
 function printPerf(title, results) {
-  const LINE = "─".repeat(60);
+  const LINE = "─".repeat(70);
   const PADDING = "  ";
 
   console.log(LINE);
@@ -64,7 +64,7 @@ function normalReducerPerfTest() {
 let [xState, xReducerPerf] = executor(xReducerPerfTest);
 let [state, normalReducerPerf] = executor(normalReducerPerfTest);
 
-printPerf("Perf Test : xReducer vs Redux reducer", [
+printPerf(`Perf Test : xReducer vs Redux reducer | Iterations : ${ITERATIONS}`, [
   `xReducer : ${xReducerPerf} milliseconds \t| State: ${xState}`,
   `normal   : ${normalReducerPerf} milliseconds \t| State: ${state}`
 ]);
