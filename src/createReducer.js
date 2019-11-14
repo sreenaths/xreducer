@@ -1,4 +1,5 @@
 import { isFunction, assert } from './helpers';
+import createAction, { TYPE_PREFIX } from './createAction';
 
 function createReducer(handlers, initialState, beforeHandle) {
   const TAG = {};
@@ -29,39 +30,6 @@ function createReducer(handlers, initialState, beforeHandle) {
   reducer.getActions = createActionsGetter(handlers, TAG, getState);
 
   return reducer;
-}
-
-const TYPE_PREFIX = "X_REDUCER"; // To prevent type name conflicts when used alongside normal reducers
-function createAction(handler, type = TYPE_PREFIX) {
-  assert(isFunction(handler), "Handler is not a function!");
-
-  function action(payload) {
-    this.__dispatch({
-      type,
-      tag: this.__reducerInfo.tag,
-      handler,
-      thisArg: this.__reducerInfo.handlers,
-      payload
-    });
-  };
-
-  action.isWrapped = true;
-  return action;
-}
-
-function createThunk(handler) {
-  assert(isFunction(handler), "Handler is not a function!");
-
-  function thunk(payload) {
-    const helpers = {
-      dispatch: this.__dispatch,
-      getState: this.__reducerInfo.getState,
-    };
-    return handler(this, payload, helpers);
-  };
-
-  thunk.isWrapped = true;
-  return thunk;
 }
 
 function mapHandlersToActions(handlers) {
@@ -103,8 +71,4 @@ function createActionsGetter(handlers, tag, getState) {
   };
 }
 
-export {
-  createReducer,
-  createThunk as thunk,
-  createAction as action,
-};
+export default createReducer;
