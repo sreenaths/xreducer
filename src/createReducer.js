@@ -31,6 +31,7 @@ function createReducer(functions, initialState, {name, beforeHandle} = {}) {
   };
 
   reducer.getActions = createActionsGetter(name, functions, TAG, getReducerState);
+  reducer.getReducerState = getReducerState;
 
   return reducer;
 }

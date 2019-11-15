@@ -71,7 +71,7 @@ test('Positive tests: Ticker test', async (done) => {
   let actions = reducer.getActions(store.dispatch);
 
   expect(actions.startTicker(100)).toBeTruthy();
-  expect(await actions.waitTicker(310)).toBe(3);
+  expect(await actions.waitTicker(320)).toBe(3);
   expect(store.getState().tickerCount).toBe(3);
   expect(actions.startTicker(100)).toBeFalsy();
   expect(await actions.waitTicker(210)).toBe(5);
@@ -80,9 +80,9 @@ test('Positive tests: Ticker test', async (done) => {
   expect(await actions.waitTicker(500)).toBe(5);
   expect(store.getState().tickerCount).toBe(5);
   expect(actions.startTicker(100)).toBeTruthy();
-  expect(await actions.waitTicker(310)).toBe(8);
+  expect(await actions.waitTicker(320)).toBe(8);
   expect(store.getState().tickerCount).toBe(8);
-  expect(await actions.waitStopTick(210)).toBe(10);
+  expect(await actions.waitStopTick(220)).toBe(10);
 
   done();
 });
