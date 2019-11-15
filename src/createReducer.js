@@ -2,11 +2,7 @@ import { isFunction, assert } from './helpers/utils';
 import createActionBuilder from './createActionBuilder';
 import createHandlerStore from './helpers/createHandlerStore';
 
-function defaultBeforeHandle(state, payload, handler) {
-  return handler(state, payload);
-}
-
-function createReducer(functions, initialState, {name, beforeHandle} = {}) {
+function createReducer(functions, initialState, {name, onHandle} = {}) {
   const TAG = {};
 
   let currentReducerState;
@@ -14,16 +10,16 @@ function createReducer(functions, initialState, {name, beforeHandle} = {}) {
 
   Object.freeze(functions);
 
-  if(beforeHandle) {
-    assert(isFunction(beforeHandle), "beforeHandle passed is not a function!");    
+  if(onHandle) {
+    assert(isFunction(onHandle), "onHandle passed is not a function!");
   } else {
-    beforeHandle = defaultBeforeHandle;
+    onHandle = defaultOnHandle;
   }
 
   // TAG Check: To execute current handler only if it was dispatched from the related dispatcher
   function reducer(state = initialState, actionObj) {
     if(actionObj.tag === TAG) {
-      state = beforeHandle(state, actionObj.payload, function(state, payload) {
+      state = onHandle(state, actionObj.payload, function(state, payload) {
         return actionObj.handler.call(actionObj.thisArg, state, payload);
       });
     }
@@ -37,11 +33,15 @@ function createReducer(functions, initialState, {name, beforeHandle} = {}) {
   return reducer;
 }
 
+function defaultOnHandle(state, payload, handler) {
+  return handler(state, payload);
+}
+
 function buildActions(reducerName, functions, tag, getReducerState) {
   assert(functions && Object.keys(functions).length !== 0, "Reducer creation failed. No functions found!");
 
   // TODO: Evaluate if this is actually required, why not open-up all handlers and leave it to the user to decide how to use it!
-  // It was brought in so that action handler functions are not directly accessible from thunk using this object, instead
+  // It was brought in so that action handler functions are not directly accessible from thunk using this keyword, instead
   // only through the actions object! That said thunk handler functions can be called using this.
   let handlerStore = createHandlerStore();
 
