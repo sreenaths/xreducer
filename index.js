@@ -1,9 +1,9 @@
 import createReducer from './src/createReducer';
-import createThunk from './src/createThunk';
-import createAction from './src/createAction';
+import createThunkBuilder from './src/createThunkBuilder';
+import createActionBuilder from './src/createActionBuilder';
 
 export {
   createReducer,
-  createThunk as thunk,
-  createAction as action,
+  createThunkBuilder as thunk,
+  createActionBuilder as action,
 };

@@ -17,11 +17,11 @@ test('Positive tests: Updating an object state with immutability-helper', () => 
     },
   };
 
-  const updateBeforeHandle = function (state, payload, handler) {
+  const beforeHandle = function (state, payload, handler) {
     return update(state, handler(state, payload));
   };
 
-  let reducer = createReducer(reducerHandlers, initialStateObj, updateBeforeHandle);
+  let reducer = createReducer(reducerHandlers, initialStateObj, {beforeHandle});
   let store = createStore(reducer);
   let actions = reducer.getActions(store.dispatch);
 

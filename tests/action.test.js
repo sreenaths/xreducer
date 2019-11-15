@@ -52,30 +52,32 @@ test('Positive tests: Action with custom type name : With payload', () => {
 test('Negative tests: Calling action from inside handler', () => {
   let actions;
   let reducer = createReducer({
-    simpleHandler: () => {},
-    handlerCallingHandler: function(){ this.simpleHandler(); },
+    simpleHandler: (s, p) => p,
+    handlerCallingHandler: function(s, p){ return this.simpleHandler(s, p); },
 
-    actionHandler: action(() => {}),
-    handlerCallingAction: function(){ this.actionHandler() },
+    actionHandler: action((s, p) => p),
+    handlerCallingActionHandler: function(s, p){ return this.actionHandler(s, p); },
 
     handlerCallingGlobalAction: () => actions.simpleHandler(),
-  });
+  }, 0);
   let store = createStore(reducer);
   actions = reducer.getActions(store.dispatch);
 
   let subscriptionCalls = 0;
   store.subscribe(() => subscriptionCalls++);
 
-  actions.handlerCallingHandler();
-  actions.actionHandler();
+  actions.handlerCallingHandler(6);
+  expect(store.getState()).toBe(6);
 
-  expect(() => {
-    actions.handlerCallingAction();
-  }).toThrow("this.actionHandler is not a function");
+  actions.actionHandler(11);
+  expect(store.getState()).toBe(11);
+
+  actions.handlerCallingActionHandler(16);
+  expect(store.getState()).toBe(16);
 
   expect(() => {
     actions.handlerCallingGlobalAction();
   }).toThrow("Reducers may not dispatch actions.");
 
-  expect(subscriptionCalls).toBe(2);
+  expect(subscriptionCalls).toBe(3);
 });

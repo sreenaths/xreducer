@@ -98,7 +98,7 @@ test('Positive tests: Calling handler inside another!', () => {
 //-- Negative tests ---------------------------------------------------------------------
 
 test('Negative tests: createReducer call > No handlers', () => {
-  const ERROR_REGEX = /No handlers found/;
+  const ERROR_REGEX = /No functions found/;
   expect(() => {
     createReducer();
   }).toThrow(ERROR_REGEX);
@@ -112,21 +112,21 @@ test('Negative tests: createReducer call > Invalid handlers', () => {
     createReducer({
       propNum: 1
     });
-  }).toThrow(/Handler 'propNum' is not a function/);
+  }).toThrow(/propNum is not a function/);
 
   expect(() => {
     createReducer({
       fun: () => {},
       propStr: "abc",
     });
-  }).toThrow(/Handler 'propStr' is not a function/);
+  }).toThrow(/propStr is not a function/);
 
   expect(() => {
     createReducer({
       fun: () => {},
       propObj: {},
     });
-  }).toThrow(/Handler 'propObj' is not a function/);
+  }).toThrow(/propObj is not a function/);
 });
 
 test('Negative tests: getActions call > Invalid dispatch function reference', () => {

@@ -11,6 +11,7 @@ test('Positive tests: Ticker test', async (done) => {
    * startTicker(t) thunk increments tickerCount every t milliseconds through incrementTicker action. Returns false if ticker is already running else true.
    * waitTicker(t) thunk waits for t milliseconds and returns the ticker value.
    * stopTicker() thunk stops ticking.
+   * waitStopTick(t) thunk waits for t milliseconds stops and returns the ticker value.
   */
 
   let ticker = {
@@ -54,6 +55,15 @@ test('Positive tests: Ticker test', async (done) => {
         setTimeout(() => res(helpers.getState().tickerCount), payload);
       });
     }),
+    // Calling a thunk handler from inside another
+    waitStopTick: thunk(async function(actions, payload, helpers) {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          this.stopTicker(actions, payload, helpers);
+          res(helpers.getState().tickerCount)
+        }, payload);
+      });
+    }),
   };
 
   let reducer = createReducer(handlers, ticker);
@@ -72,7 +82,7 @@ test('Positive tests: Ticker test', async (done) => {
   expect(actions.startTicker(100)).toBeTruthy();
   expect(await actions.waitTicker(310)).toBe(8);
   expect(store.getState().tickerCount).toBe(8);
-  actions.stopTicker();
+  expect(await actions.waitStopTick(210)).toBe(10);
 
   done();
 });

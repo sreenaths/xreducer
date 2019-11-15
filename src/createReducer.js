@@ -1,13 +1,14 @@
-import { isFunction, assert } from './helpers';
-import createAction, { TYPE_PREFIX } from './createAction';
+import { isFunction, assert } from './helpers/utils';
+import createActionBuilder from './createActionBuilder';
+import createHandlerStore from './helpers/createHandlerStore';
 
-function createReducer(handlers, initialState, beforeHandle) {
+function createReducer(functions, initialState, {name, beforeHandle} = {}) {
   const TAG = {};
 
   let currentState;
   const getState = () => currentState;
 
-  Object.freeze(handlers);
+  Object.freeze(functions);
 
   assert(!beforeHandle || isFunction(beforeHandle), "beforeHandle passed is not a function!");
 
@@ -29,45 +30,41 @@ function createReducer(handlers, initialState, beforeHandle) {
     return state;
   };
 
-  reducer.getActions = createActionsGetter(handlers, TAG, getState);
+  reducer.getActions = createActionsGetter(name, functions, TAG, getState);
 
   return reducer;
 }
 
-function mapHandlersToActions(handlers) {
-  assert(handlers && Object.keys(handlers).length !== 0, "Reducer creation failed. No handlers found!");
+function buildActions(reducerName, functions, tag, getState) {
+  assert(functions && Object.keys(functions).length !== 0, "Reducer creation failed. No functions found!");
+
+  let handlerStore = createHandlerStore();
 
   let actions = {};
-  let pureHandlers = {};
-  Object.keys(handlers).forEach(name => {
-    const handler = handlers[name];
-    assert(isFunction(handler), `Handler '${name}' is not a function!`);
+  Object.keys(functions).forEach(name => {
+    const func = functions[name];
+    assert(isFunction(func), `${name} is not a function!`);
 
-    const type = `${TYPE_PREFIX}_${name.toUpperCase()}`;
-    if(handler.isWrapped) {
-      actions[name] = handler;
-    } else {
-      actions[name] = createAction(handler, type);
-      pureHandlers[name] = handler;
-    }
+    const builder = !func.hasOwnProperty("handlerType") ? createActionBuilder(func) : func;
+    let {setHandler, getHandlers} = handlerStore(builder.handlerType);
+    let [action, handler] = builder({reducerName, name, tag, getState, getHandlers});
+
+    actions[name] = action;
+    setHandler(name, handler);
   });
-  return {actions, pureHandlers};
+
+  return actions;
 }
 
-function createActionsGetter(handlers, tag, getState) {
-  const {actions, pureHandlers} = mapHandlersToActions(handlers);
-  const reducerInfo = {
-    tag,
-    getState,
-    handlers: pureHandlers,
-  };
+function createActionsGetter(reducerName, functions, tag, getState) {
+  const actions = buildActions(reducerName, functions, tag, getState);
 
   return function(dispatch) {
     assert(isFunction(dispatch), "Invalid dispatch function reference!");
 
     let actionsObj = Object.create(actions);
     actionsObj.__dispatch = dispatch;
-    actionsObj.__reducerInfo = reducerInfo;
+    Object.freeze(actionsObj);
 
     return actionsObj;
   };

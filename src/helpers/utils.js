@@ -10,7 +10,19 @@ function assert(condition, error) {
   }
 }
 
+function createType(reducerName, name) {
+  var type;
+  if(reducerName) {
+    type = `${reducerName}_${name}`;
+  } else {
+    type = name || "";
+  }
+  type = type + "_XRA";
+  return type.toUpperCase();
+}
+
 export {
   isFunction,
   assert,
+  createType,
 };
