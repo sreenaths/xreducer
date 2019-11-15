@@ -1,4 +1,4 @@
-import { createReducer, thunk, action } from '../index';
+import { createReducer, thunk } from '../index';
 import { createStore } from 'redux';
 
 //-- Positive tests ---------------------------------------------------------------------
@@ -35,8 +35,8 @@ test('Positive tests: Ticker test', async (done) => {
     },
 
     // Normal function as thunk
-    startTicker: thunk(function (actions, payload, helpers) {
-      if(helpers.getState().tickerID === null) {
+    startTicker: thunk(function (actions, getState, payload) {
+      if(getState().tickerID === null) {
         actions.setID(setInterval(() => {
           actions.incrementTick();
         }, payload));
@@ -44,23 +44,23 @@ test('Positive tests: Ticker test', async (done) => {
       }
       return false;
     }),
-    stopTicker: thunk(function (actions, payload, helpers) {
-      clearInterval(helpers.getState().tickerID);
+    stopTicker: thunk(function (actions, getState) {
+      clearInterval(getState().tickerID);
       actions.setID(null);
     }),
 
     // Async function as thunk
-    waitTicker: thunk(async (actions, payload, helpers) => {
+    waitTicker: thunk(async (actions, getState, payload) => {
       return new Promise((res, rej) => {
-        setTimeout(() => res(helpers.getState().tickerCount), payload);
+        setTimeout(() => res(getState().tickerCount), payload);
       });
     }),
     // Calling a thunk handler from inside another
-    waitStopTick: thunk(async function(actions, payload, helpers) {
+    waitStopTick: thunk(async function(actions, getState, payload) {
       return new Promise((res, rej) => {
         setTimeout(() => {
-          this.stopTicker(actions, payload, helpers);
-          res(helpers.getState().tickerCount)
+          this.stopTicker(actions, getState, payload);
+          res(getState().tickerCount)
         }, payload);
       });
     }),

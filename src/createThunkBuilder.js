@@ -4,14 +4,13 @@ import setupBuilder from './helpers/setupBuilder';
 function createThunkBuilder(handler) {
   assert(isFunction(handler), "Handler is not a function!");
 
-  return setupBuilder(function({reducerName, name, tag, getState, getHandlers}) {
+  return setupBuilder(function({getState, getHandlers}) {
 
     function thunk(payload) {
       const helpers = {
         dispatch: this.__dispatch,
-        getState,
       };
-      return handler.call(getHandlers(), this, payload, helpers);
+      return handler.call(getHandlers(), this, getState, payload, helpers);
     };
 
     return [thunk, handler];

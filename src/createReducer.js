@@ -38,6 +38,9 @@ function createReducer(functions, initialState, {name, beforeHandle} = {}) {
 function buildActions(reducerName, functions, tag, getState) {
   assert(functions && Object.keys(functions).length !== 0, "Reducer creation failed. No functions found!");
 
+  // TODO: Evaluate if this is actually required, why not open-up all handlers and leave it to the user to decide how to use it!
+  // It was brought in so that action handler functions are not directly accessible from thunk using this object, instead
+  // only through the actions object! That said thunk handler functions can be called using this.
   let handlerStore = createHandlerStore();
 
   let actions = {};
