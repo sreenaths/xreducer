@@ -1,3 +1,5 @@
+// Stores a hash of hash of handler functions
+
 function createHandlerHash() {
   const handlerHash = {};
   const setHandler = (name, handler) => handlerHash[name] = handler;
