@@ -5,8 +5,8 @@ import createHandlerStore from './helpers/createHandlerStore';
 function createReducer(functions, initialState, {name, beforeHandle} = {}) {
   const TAG = {};
 
-  let currentState;
-  const getState = () => currentState;
+  let currentReducerState;
+  const getReducerState = () => currentReducerState;
 
   Object.freeze(functions);
 
@@ -20,22 +20,22 @@ function createReducer(functions, initialState, {name, beforeHandle} = {}) {
         return actionObj.handler.call(actionObj.thisArg, state, payload);
       });
     }
-    currentState = state;
+    currentReducerState = state;
     return state;
   } : function(state = initialState, actionObj) {
     if(actionObj.tag === TAG) {
       state = actionObj.handler.call(actionObj.thisArg, state, actionObj.payload);
     }
-    currentState = state;
+    currentReducerState = state;
     return state;
   };
 
-  reducer.getActions = createActionsGetter(name, functions, TAG, getState);
+  reducer.getActions = createActionsGetter(name, functions, TAG, getReducerState);
 
   return reducer;
 }
 
-function buildActions(reducerName, functions, tag, getState) {
+function buildActions(reducerName, functions, tag, getReducerState) {
   assert(functions && Object.keys(functions).length !== 0, "Reducer creation failed. No functions found!");
 
   // TODO: Evaluate if this is actually required, why not open-up all handlers and leave it to the user to decide how to use it!
@@ -50,7 +50,7 @@ function buildActions(reducerName, functions, tag, getState) {
 
     const builder = !func.hasOwnProperty("handlerType") ? createActionBuilder(func) : func;
     let {setHandler, getHandlers} = handlerStore(builder.handlerType);
-    let [action, handler] = builder({reducerName, name, tag, getState, getHandlers});
+    let [action, handler] = builder({reducerName, name, tag, getReducerState, getHandlers});
 
     actions[name] = action;
     setHandler(name, handler);
@@ -59,8 +59,8 @@ function buildActions(reducerName, functions, tag, getState) {
   return actions;
 }
 
-function createActionsGetter(reducerName, functions, tag, getState) {
-  const actions = buildActions(reducerName, functions, tag, getState);
+function createActionsGetter(reducerName, functions, tag, getReducerState) {
+  const actions = buildActions(reducerName, functions, tag, getReducerState);
 
   return function(dispatch) {
     assert(isFunction(dispatch), "Invalid dispatch function reference!");

@@ -35,8 +35,8 @@ test('Positive tests: Ticker test', async (done) => {
     },
 
     // Normal function as thunk
-    startTicker: thunk(function (actions, getState, payload) {
-      if(getState().tickerID === null) {
+    startTicker: thunk(function (actions, getReducerState, payload) {
+      if(getReducerState().tickerID === null) {
         actions.setID(setInterval(() => {
           actions.incrementTick();
         }, payload));
@@ -44,23 +44,23 @@ test('Positive tests: Ticker test', async (done) => {
       }
       return false;
     }),
-    stopTicker: thunk(function (actions, getState) {
-      clearInterval(getState().tickerID);
+    stopTicker: thunk(function (actions, getReducerState) {
+      clearInterval(getReducerState().tickerID);
       actions.setID(null);
     }),
 
     // Async function as thunk
-    waitTicker: thunk(async (actions, getState, payload) => {
+    waitTicker: thunk(async (actions, getReducerState, payload) => {
       return new Promise((res, rej) => {
-        setTimeout(() => res(getState().tickerCount), payload);
+        setTimeout(() => res(getReducerState().tickerCount), payload);
       });
     }),
     // Calling a thunk handler from inside another
-    waitStopTick: thunk(async function(actions, getState, payload) {
+    waitStopTick: thunk(async function(actions, getReducerState, payload) {
       return new Promise((res, rej) => {
         setTimeout(() => {
-          this.stopTicker(actions, getState, payload);
-          res(getState().tickerCount)
+          this.stopTicker(actions, getReducerState, payload);
+          res(getReducerState().tickerCount)
         }, payload);
       });
     }),
