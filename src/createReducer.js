@@ -2,6 +2,10 @@ import { isFunction, assert } from './helpers/utils';
 import createActionBuilder from './createActionBuilder';
 import createHandlerStore from './helpers/createHandlerStore';
 
+function defaultBeforeHandle(state, payload, handler) {
+  return handler(state, payload);
+}
+
 function createReducer(functions, initialState, {name, beforeHandle} = {}) {
   const TAG = {};
 
@@ -10,21 +14,18 @@ function createReducer(functions, initialState, {name, beforeHandle} = {}) {
 
   Object.freeze(functions);
 
-  assert(!beforeHandle || isFunction(beforeHandle), "beforeHandle passed is not a function!");
+  if(beforeHandle) {
+    assert(isFunction(beforeHandle), "beforeHandle passed is not a function!");    
+  } else {
+    beforeHandle = defaultBeforeHandle;
+  }
 
-  // TAG: To execute current handler only if it was dispatched from the related dispatcher
-  // Writing this as two separate functions for the minor increase in performance
-  const reducer = beforeHandle ? function(state = initialState, actionObj) {
+  // TAG Check: To execute current handler only if it was dispatched from the related dispatcher
+  function reducer(state = initialState, actionObj) {
     if(actionObj.tag === TAG) {
-      state = beforeHandle(state, actionObj.payload, function (state, payload) {
+      state = beforeHandle(state, actionObj.payload, function(state, payload) {
         return actionObj.handler.call(actionObj.thisArg, state, payload);
       });
-    }
-    currentReducerState = state;
-    return state;
-  } : function(state = initialState, actionObj) {
-    if(actionObj.tag === TAG) {
-      state = actionObj.handler.call(actionObj.thisArg, state, actionObj.payload);
     }
     currentReducerState = state;
     return state;
