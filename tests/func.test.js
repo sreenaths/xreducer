@@ -1,4 +1,4 @@
-import { createReducer, thunk } from '../index';
+import { createReducer, func } from '../index';
 import { createStore } from 'redux';
 
 //-- Positive tests ---------------------------------------------------------------------
@@ -8,10 +8,10 @@ test('Positive tests: Ticker test', async (done) => {
   /**
    * Ticker Test
    * state object would have two values tickerCount & tickerID. For a non-running ticker ID would be null.
-   * startTicker(t) thunk increments tickerCount every t milliseconds through incrementTicker action. Returns false if ticker is already running else true.
-   * waitTicker(t) thunk waits for t milliseconds and returns the ticker value.
-   * stopTicker() thunk stops ticking.
-   * waitStopTick(t) thunk waits for t milliseconds stops and returns the ticker value.
+   * startTicker(t) func increments tickerCount every t milliseconds through incrementTicker action. Returns false if ticker is already running else true.
+   * waitTicker(t) func waits for t milliseconds and returns the ticker value.
+   * stopTicker() func stops ticking.
+   * waitStopTick(t) func waits for t milliseconds stops and returns the ticker value.
   */
 
   let ticker = {
@@ -34,8 +34,8 @@ test('Positive tests: Ticker test', async (done) => {
       };
     },
 
-    // Normal function as thunk
-    startTicker: thunk(function (actions, getReducerState, payload) {
+    // Normal function as func
+    startTicker: func(function (actions, getReducerState, payload) {
       if(getReducerState().tickerID === null) {
         actions.setID(setInterval(() => {
           actions.incrementTick();
@@ -44,19 +44,19 @@ test('Positive tests: Ticker test', async (done) => {
       }
       return false;
     }),
-    stopTicker: thunk(function (actions, getReducerState) {
+    stopTicker: func(function (actions, getReducerState) {
       clearInterval(getReducerState().tickerID);
       actions.setID(null);
     }),
 
-    // Async function as thunk
-    waitTicker: thunk(async (actions, getReducerState, payload) => {
+    // Async function as func
+    waitTicker: func(async (actions, getReducerState, payload) => {
       return new Promise((res, rej) => {
         setTimeout(() => res(getReducerState().tickerCount), payload);
       });
     }),
-    // Calling a thunk handler from inside another
-    waitStopTick: thunk(async function(actions, getReducerState, payload) {
+    // Calling a func handler from inside another
+    waitStopTick: func(async function(actions, getReducerState, payload) {
       return new Promise((res, rej) => {
         setTimeout(() => {
           this.stopTicker(actions, getReducerState, payload);

@@ -6,8 +6,8 @@ function createReduxThunkBuilder(handler) {
 
   return setupBuilder(function({getHandlers}) {
 
-    function reduxThunk(payload) {
-      this.__dispatch(function(dispatch, getState) {
+    function reduxThunk(dispatch, payload) {
+      dispatch(function(dispatch, getState) {
         const helpers = {
           dispatch
         };

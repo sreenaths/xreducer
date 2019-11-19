@@ -28,7 +28,7 @@ function getNewReducer(){
     count: 0,
   };
 
-  function onHandle(state, payload, handler) {
+  function onStateChange(state, payload, handler) {
     state = handler(state, payload);
     saveState(state);
     return state;
@@ -41,7 +41,7 @@ function getNewReducer(){
         count: state.count + payload
       };
     },
-  }, initialState, {onHandle});
+  }, initialState, {onStateChange});
 
   return reducer;
 }

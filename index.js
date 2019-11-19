@@ -1,5 +1,5 @@
 import createReducer from './src/createReducer';
-import createThunkBuilder from './src/createThunkBuilder';
+import createFuncBuilder from './src/createFuncBuilder';
 import createActionBuilder from './src/createActionBuilder';
 import createReduxThunkBuilder from './src/createReduxThunkBuilder';
 
@@ -8,6 +8,6 @@ export {
 
   createActionBuilder as action,
 
-  createThunkBuilder as thunk,
+  createFuncBuilder as func,
   createReduxThunkBuilder as reduxThunk
 };

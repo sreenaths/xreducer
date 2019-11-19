@@ -18,5 +18,4 @@ test('Positive tests: Basic creation', () => {
 
   actions.handlerB()
   expect(store.getState()).toBeTruthy();
-  expect(reducer.getReducerState()).toBeTruthy();
 });

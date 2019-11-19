@@ -15,13 +15,13 @@ test('Positive tests: Updating an object state with immer', () => {
     },
   };
 
-  const onHandle = function (state, payload, handler) {
+  const onStateChange = function (state, payload, handler) {
     return produce(state, draftState => {
       handler(draftState, payload);
     });
   };
 
-  let reducer = createReducer(reducerHandlers, initialStateObj, {onHandle});
+  let reducer = createReducer(reducerHandlers, initialStateObj, {onStateChange});
   let store = createStore(reducer);
   let actions = reducer.getActions(store.dispatch);
 
