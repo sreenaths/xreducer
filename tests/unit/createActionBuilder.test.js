@@ -1,4 +1,4 @@
-import { createReducer, action } from '../index';
+import { createReducer, action } from '../../index';
 import { createStore, applyMiddleware } from 'redux';
 
 //-- Positive tests ---------------------------------------------------------------------

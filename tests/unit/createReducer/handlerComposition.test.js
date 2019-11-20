@@ -1,4 +1,4 @@
-import { createReducer } from '../index';
+import { createReducer } from '../../../index';
 import { createStore } from 'redux';
 
 test('Positive tests: Composition using handlers!', () => {

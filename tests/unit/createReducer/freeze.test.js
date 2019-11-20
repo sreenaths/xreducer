@@ -1,6 +1,6 @@
 "use strict";
 
-import { createReducer } from '../index';
+import { createReducer } from '../../../index';
 
 //-- Positive tests ---------------------------------------------------------------------
 

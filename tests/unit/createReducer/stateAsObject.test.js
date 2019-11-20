@@ -1,27 +1,23 @@
-import { createReducer } from '../../index';
+import { createReducer } from '../../../index';
 import { createStore } from 'redux';
-import produce from "immer";
 
-import initialStateObj from '../data/users';
+import initialStateObj from './data/users';
 
 //-- Positive tests ---------------------------------------------------------------------
 
-test('Positive tests: Updating an object state with immer', () => {
+test('Positive tests: Updating an object state', () => {
 
   const reducerHandlers = {
     addUser: (state, payload) => {
-      state.users.push(payload);
-      state.maxAge = Math.max(state.maxAge, payload.age);
+      return {
+        ...state,
+        users: [...state.users, payload],
+        maxAge: Math.max(state.maxAge, payload.age),
+      };
     },
   };
 
-  const onStateChange = function (state, payload, handler) {
-    return produce(state, draftState => {
-      handler(draftState, payload);
-    });
-  };
-
-  let reducer = createReducer(reducerHandlers, initialStateObj, {onStateChange});
+  let reducer = createReducer(reducerHandlers, initialStateObj);
   let store = createStore(reducer);
   let actions = reducer.getActions(store.dispatch);
 
@@ -51,4 +47,5 @@ test('Positive tests: Updating an object state with immer', () => {
   expect(store.getState().users[4].name).toBe("Sid");
   expect(store.getState().maxAge).toBe(85);
   expect(store.getState().cities).toBe(initialStateObj.cities);
+
 });

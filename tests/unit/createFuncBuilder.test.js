@@ -1,4 +1,4 @@
-import { createReducer, func } from '../index';
+import { createReducer, func } from '../../index';
 import { createStore, applyMiddleware } from 'redux';
 
 //-- Positive tests ---------------------------------------------------------------------

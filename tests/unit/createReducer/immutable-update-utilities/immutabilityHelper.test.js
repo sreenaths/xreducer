@@ -1,23 +1,27 @@
-import { createReducer } from '../index';
+import { createReducer } from '../../../../index';
 import { createStore } from 'redux';
+import update from 'immutability-helper';
 
-import initialStateObj from './data/users';
+import initialStateObj from '../data/users';
 
 //-- Positive tests ---------------------------------------------------------------------
 
-test('Positive tests: Updating an object state', () => {
+test('Positive tests: Updating an object state with immutability-helper', () => {
 
   const reducerHandlers = {
     addUser: (state, payload) => {
       return {
-        ...state,
-        users: [...state.users, payload],
-        maxAge: Math.max(state.maxAge, payload.age),
+        users: {$push: [payload]},
+        maxAge: {$set: Math.max(state.maxAge, payload.age)}
       };
     },
   };
 
-  let reducer = createReducer(reducerHandlers, initialStateObj);
+  const onStateChange = function (state, payload, handler) {
+    return update(state, handler(state, payload));
+  };
+
+  let reducer = createReducer(reducerHandlers, initialStateObj, {onStateChange});
   let store = createStore(reducer);
   let actions = reducer.getActions(store.dispatch);
 
@@ -47,5 +51,4 @@ test('Positive tests: Updating an object state', () => {
   expect(store.getState().users[4].name).toBe("Sid");
   expect(store.getState().maxAge).toBe(85);
   expect(store.getState().cities).toBe(initialStateObj.cities);
-
 });

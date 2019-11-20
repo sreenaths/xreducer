@@ -1,24 +1,24 @@
-import { createReducer } from '../../index';
+import { createReducer } from '../../../../index';
 import { createStore } from 'redux';
-import update from 'immutability-helper';
+import produce from "immer";
 
 import initialStateObj from '../data/users';
 
 //-- Positive tests ---------------------------------------------------------------------
 
-test('Positive tests: Updating an object state with immutability-helper', () => {
+test('Positive tests: Updating an object state with immer', () => {
 
   const reducerHandlers = {
     addUser: (state, payload) => {
-      return {
-        users: {$push: [payload]},
-        maxAge: {$set: Math.max(state.maxAge, payload.age)}
-      };
+      state.users.push(payload);
+      state.maxAge = Math.max(state.maxAge, payload.age);
     },
   };
 
   const onStateChange = function (state, payload, handler) {
-    return update(state, handler(state, payload));
+    return produce(state, draftState => {
+      handler(draftState, payload);
+    });
   };
 
   let reducer = createReducer(reducerHandlers, initialStateObj, {onStateChange});

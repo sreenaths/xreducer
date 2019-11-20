@@ -1,4 +1,4 @@
-import { createReducer, reduxThunk } from '../index';
+import { createReducer, reduxThunk } from '../../index';
 import { createStore, applyMiddleware } from 'redux';
 import ReduxThunkMiddleware from 'redux-thunk';
 
