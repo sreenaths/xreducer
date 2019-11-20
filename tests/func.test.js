@@ -1,5 +1,5 @@
 import { createReducer, func } from '../index';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 
 //-- Positive tests ---------------------------------------------------------------------
 
@@ -85,4 +85,39 @@ test('Positive tests: Ticker test', async (done) => {
   expect(await actions.waitStopTick(220)).toBe(10);
 
   done();
+});
+
+test('Positive tests: Debounce func with payload', (done) => {
+  let reducer = createReducer({
+    inc: (state, payload) => state + payload,
+    act: func((actions, getReducerState, payload) => actions.inc(payload), {debounceWait: 100})
+  }, 1);
+
+  let middleManCalls = 0;
+  function middleMan({ getState }) {
+    return next => action => {
+      middleManCalls++;
+      return next(action)
+    }
+  }
+
+  let store = createStore(reducer, applyMiddleware(middleMan));
+  let actions = reducer.getActions(store.dispatch);
+
+  let subscriptionCalls = 0;
+  store.subscribe(() => subscriptionCalls++);
+
+  actions.act(1);
+  actions.act(2);
+  actions.act(3);
+  actions.act(4); // << Only this must get called
+
+  setTimeout(() => {
+    expect(middleManCalls).toBe(1);
+    expect(subscriptionCalls).toBe(1);
+
+    expect(store.getState()).toBe(1 + 4);
+
+    done();
+  }, 200);
 });

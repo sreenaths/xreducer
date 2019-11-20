@@ -13,7 +13,7 @@ function loadState(){
   }
 }
 function saveState(state) {
-  // Can use libraries like throttle from lodash to improve performance
+  // Can use debounce/throttle function to improve performance
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   } catch (err) {

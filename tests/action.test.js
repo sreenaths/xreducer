@@ -47,6 +47,40 @@ test('Positive tests: Action with custom type name : With payload', () => {
   expect(subscriptionCalls).toBe(6);
 });
 
+test('Positive tests: Debounce action with payload', (done) => {
+  let reducer = createReducer({
+    inc: action((state, payload) => state + payload, {debounceWait: 100}),
+  }, 1);
+
+  let middleManCalls = 0;
+  function middleMan({ getState }) {
+    return next => action => {
+      middleManCalls++;
+      return next(action)
+    }
+  }
+
+  let store = createStore(reducer, applyMiddleware(middleMan));
+  let actions = reducer.getActions(store.dispatch);
+
+  let subscriptionCalls = 0;
+  store.subscribe(() => subscriptionCalls++);
+
+  actions.inc(1);
+  actions.inc(2);
+  actions.inc(3);
+  actions.inc(4); // << Only this must get called
+
+  setTimeout(() => {
+    expect(middleManCalls).toBe(1);
+    expect(subscriptionCalls).toBe(1);
+
+    expect(store.getState()).toBe(1 + 4);
+
+    done();
+  }, 200);
+});
+
 //-- Negative tests ---------------------------------------------------------------------
 
 test('Negative tests: Calling action from inside handler', () => {
