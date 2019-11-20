@@ -7,7 +7,6 @@ import setupBuilder from './helpers/setupBuilder';
 
 const HANDLER_TYPE = "FUNC";
 
-// TODO: Based on an optional param, dispatch actions on start and end without TAG for debugging
 function createFuncBuilder(handler, {debounceWait} = {}) {
   assert(isFunction(handler), "Handler is not a function!");
 

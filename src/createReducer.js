@@ -69,7 +69,7 @@ function bindActions(actions, dispatch) {
 }
 
 function createActionsGetter(actions) {
-  const cache = new WeakMap();
+  const cache = new WeakMap(); // In case multiple stores are in use
 
   return function(dispatch) {
     if(cache.has(dispatch)) {
