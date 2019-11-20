@@ -52,3 +52,24 @@ test('Positive tests: Debounce func with payload', (done) => {
     done();
   }, 200);
 });
+
+test('Positive tests: debugMode test', (done) => {
+  let reducer = createReducer({
+    act: reduxThunk(() => {})
+  }, null, {reducerName: "testReducer", debugMode: true});
+
+  function middleMan({ getState }) {
+    return next => action => {
+      if(action.type) {
+        expect(action.type).toBe("@THUNK.testReducer.act");
+        done();
+      }
+      return next(action)
+    }
+  }
+
+  let store = createStore(reducer, applyMiddleware(ReduxThunkMiddleware, middleMan));
+  let actions = reducer.getActions(store.dispatch);
+
+  actions.act();
+});

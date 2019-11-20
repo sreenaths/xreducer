@@ -121,3 +121,24 @@ test('Positive tests: Debounce func with payload', (done) => {
     done();
   }, 200);
 });
+
+test('Positive tests: debugMode test', (done) => {
+  let reducer = createReducer({
+    act: func(() => {})
+  }, null, {reducerName: "testReducer", debugMode: true});
+
+  expect.assertions(1);
+
+  function middleMan({ getState }) {
+    return next => action => {
+      expect(action.type).toBe("@FUNC.testReducer.act");
+      done();
+      return next(action)
+    }
+  }
+
+  let store = createStore(reducer, applyMiddleware(middleMan));
+  let actions = reducer.getActions(store.dispatch);
+
+  actions.act();
+});

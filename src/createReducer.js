@@ -3,7 +3,7 @@ import assert from './helpers/assert';
 
 import createActionBuilder from './createActionBuilder';
 
-function createReducer(functions, initialState, {reducerName, onStateChange} = {}) {
+function createReducer(functions, initialState, {reducerName, onStateChange, debugMode} = {}) {
   Object.freeze(functions);
 
   const TAG = {};
@@ -17,7 +17,7 @@ function createReducer(functions, initialState, {reducerName, onStateChange} = {
     onStateChange = defaultOnHandle;
   }
 
-  const {actions, handlers} = build(functions, reducerName, TAG, getReducerState);
+  const {actions, handlers} = build(functions, reducerName, TAG, getReducerState, debugMode);
 
   // TAG Check: To execute current handler only if it was dispatched from the related dispatcher
   function reducer(state = initialState, actionObj) {
@@ -39,7 +39,7 @@ function defaultOnHandle(state, payload, handler) {
   return handler(state, payload);
 }
 
-function build(functions, reducerName, tag, getReducerState) {
+function build(functions, reducerName, tag, getReducerState, debugMode) {
   assert(functions && Object.keys(functions).length !== 0, "Reducer creation failed. No functions found!");
 
   const actions = {};
@@ -51,7 +51,7 @@ function build(functions, reducerName, tag, getReducerState) {
     assert(isFunction(func), `${handlerName} is not a function!`);
 
     const builder = !func.hasOwnProperty("handlerType") ? createActionBuilder(func) : func;
-    let [action, handler] = builder({reducerName, handlerName, tag, getReducerState, getHandlers});
+    let [action, handler] = builder({reducerName, handlerName, tag, getReducerState, getHandlers, debugMode});
 
     actions[handlerName] = action;
     handlers[handlerName] = handler;
