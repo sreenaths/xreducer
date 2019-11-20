@@ -1,6 +1,6 @@
-import { createReducer } from '../index';
-import { createStore } from 'redux';
-import { combineReducers } from 'redux'
+import { createReducer, func } from '../index';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import ReduxThunkMiddleware from 'redux-thunk';
 
 //-- Positive tests ---------------------------------------------------------------------
 
@@ -53,9 +53,45 @@ test('Positive tests: combineReducers with 2 xReducers', () => {
   expect(subscriptionCalls).toBe(6);
 });
 
+test('Positive tests: Calling reducer actions from one another', () => {
+  let reducerA = createReducer({
+    inc: (state, payload) => state + payload,
+    incB: func((actions, getReducerState, payload, helpers) => {
+      let actionsB = reducerB.getActions(helpers.dispatch);
+      actionsB.inc(payload);
+    })
+  }, 1);
+  let reducerB = createReducer({
+    inc: (state, payload) => state + payload,
+    incA: func((actions, getReducerState, payload, helpers) => {
+      let actionsA = reducerA.getActions(helpers.dispatch);
+      actionsA.inc(payload);
+    })
+  }, 1);
+
+  let combinedReducer = combineReducers({
+    valA: reducerA,
+    valB: reducerB
+  });
+
+  let store = createStore(combinedReducer);
+
+  let actionsA = reducerA.getActions(store.dispatch);
+  let actionsB = reducerB.getActions(store.dispatch);
+
+  actionsA.incB(2);
+  expect(store.getState().valA).toBe(1);
+  expect(store.getState().valB).toBe(3);
+
+  actionsB.incA(2);
+  expect(store.getState().valA).toBe(3);
+  expect(store.getState().valB).toBe(3);
+});
+
 test('Positive tests: combineReducers with a xReducers and a normal reducer', () => {
   let xReducer = createReducer({
     inc: (state, payload) => state + payload,
+    dispToNormal: func((actions, getReducerState, payload, helpers) => helpers.dispatch({type: "INC", payload}))
   }, 1);
 
   const normalReducer = function (state = 100, action) {
@@ -79,12 +115,13 @@ test('Positive tests: combineReducers with a xReducers and a normal reducer', ()
     valN: normalReducer
   });
 
-  let store = createStore(combinedReducer);
+  let store = createStore(combinedReducer, applyMiddleware(ReduxThunkMiddleware));
   let actions = xReducer.getActions(store.dispatch);
 
   let subscriptionCalls = 0;
   store.subscribe(() => subscriptionCalls++);
 
+  // Call xReducer action
   actions.inc(1);
   expect(store.getState().valX).toBe(2);
   expect(store.getState().valN).toBe(100);
@@ -93,6 +130,7 @@ test('Positive tests: combineReducers with a xReducers and a normal reducer', ()
   expect(store.getState().valX).toBe(4);
   expect(store.getState().valN).toBe(100);
 
+  // Call normal redux dispatch
   store.dispatch(action(7));
   expect(store.getState().valX).toBe(4);
   expect(store.getState().valN).toBe(107);
@@ -101,7 +139,20 @@ test('Positive tests: combineReducers with a xReducers and a normal reducer', ()
   expect(store.getState().valX).toBe(4);
   expect(store.getState().valN).toBe(109);
 
-  expect(subscriptionCalls).toBe(4);
+  // Call normal redux dispatch from a xReducer action
+  actions.dispToNormal(2);
+  expect(store.getState().valX).toBe(4);
+  expect(store.getState().valN).toBe(111);
+
+  // Call xReducer action from a redux thunk dispatch
+  store.dispatch(function (dispatch) {
+    let actions = xReducer.getActions(dispatch);
+    actions.inc(2);
+  });
+  expect(store.getState().valX).toBe(6);
+  expect(store.getState().valN).toBe(111);
+
+  expect(subscriptionCalls).toBe(6);
 });
 
 test('Positive tests: combineReducers with nested xReducers', () => {
@@ -150,56 +201,4 @@ test('Positive tests: combineReducers with nested xReducers', () => {
   expect(store.getState().valBC.valC).toBe(2000);
 
   expect(subscriptionCalls).toBe(3);
-});
-
-test('Positive tests: nesting with handlers!', () => {
-  let handlersBC = {
-    inc: (state, payload) => {
-      return {
-        ...state,
-        valB: state.valB + payload.valB,
-        valC: state.valC + payload.valC,
-      };
-    },
-  };
-
-  let handlersA = {
-    inc: (state, payload) => {
-      return {
-        ...state,
-        valA: state.valA + payload.valA,
-        valBC: handlersBC.inc(state.valBC, payload),
-      };
-    },
-  };
-
-  let reducer = createReducer(handlersA, {
-    valA: 1,
-    valBC: {
-      valB: 100,
-      valC: 1000
-    }
-  });
-
-  let store = createStore(reducer);
-
-  let actions = reducer.getActions(store.dispatch);
-
-  let subscriptionCalls = 0;
-  store.subscribe(() => subscriptionCalls++);
-
-  expect(store.getState().valA).toBe(1);
-  expect(store.getState().valBC.valB).toBe(100);
-  expect(store.getState().valBC.valC).toBe(1000);
-
-  actions.inc({
-    valA: 1,
-    valB: 100,
-    valC: 1000
-  });
-  expect(store.getState().valA).toBe(2);
-  expect(store.getState().valBC.valB).toBe(200);
-  expect(store.getState().valBC.valC).toBe(2000);
-
-  expect(subscriptionCalls).toBe(1);
 });
