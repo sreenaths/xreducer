@@ -1,18 +1,23 @@
-import { isFunction, assert, createType } from './helpers/utils';
+import isFunction from './helpers/isFunction';
+import assert from './helpers/assert';
+import createDispatchType from './helpers/createDispatchType';
+
 import setupBuilder from './helpers/setupBuilder';
 
-function createActionBuilder(handler, customType) {
+const HANDLER_TYPE = "ACTION";
+
+function createActionBuilder(handler, {customType} = {}) {
   assert(isFunction(handler), "Handler is not a function!");
 
-  return setupBuilder(function({reducerName, name, tag}) {
-    const type = customType || createType(reducerName, name);
+  return setupBuilder(function({reducerName, handlerName, tag}) {
+    const type = customType || createDispatchType(HANDLER_TYPE, reducerName, handlerName);
 
-    function action(dispatch, payload) {
-      dispatch({type, tag, name, payload});
+    let action = function action(dispatch, payload) {
+      dispatch({type, tag, handlerName, payload});
     };
 
     return [action, handler];
-  }, "ACTION");
+  }, HANDLER_TYPE);
 }
 
 export default createActionBuilder;

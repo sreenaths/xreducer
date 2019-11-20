@@ -6,9 +6,9 @@ import { createStore, applyMiddleware } from 'redux';
 test('Positive tests: Action with custom type name : With payload', () => {
   let customType;
   let reducer = createReducer({
-    inc: action((state, payload) => state + payload, "CUSTOM_INC"),
-    dec: action((state, payload) => state - payload, "CUSTOM_DEC"),
-    set: action((state, payload) => payload, "CUSTOM_SET"),
+    inc: action((state, payload) => state + payload, {customType: "CUSTOM_INC"}),
+    dec: action((state, payload) => state - payload, {customType: "CUSTOM_DEC"}),
+    set: action((state, payload) => payload, {customType: "CUSTOM_SET"}),
   });
 
   let middleManCalls = 0;

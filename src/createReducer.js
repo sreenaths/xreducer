@@ -1,4 +1,6 @@
-import { isFunction, assert } from './helpers/utils';
+import isFunction from './helpers/isFunction';
+import assert from './helpers/assert';
+
 import createActionBuilder from './createActionBuilder';
 
 function createReducer(functions, initialState, {reducerName, onStateChange} = {}) {
@@ -21,7 +23,7 @@ function createReducer(functions, initialState, {reducerName, onStateChange} = {
   function reducer(state = initialState, actionObj) {
     if(actionObj.tag === TAG) {
       state = onStateChange(state, actionObj.payload, function(state, payload) {
-        return handlers[actionObj.name](state, payload);
+        return handlers[actionObj.handlerName](state, payload);
       });
     }
     currentReducerState = state;
@@ -44,15 +46,15 @@ function build(functions, reducerName, tag, getReducerState) {
   const handlers = {};
   const getHandlers = () => handlers;
 
-  Object.keys(functions).forEach(name => {
-    const func = functions[name];
-    assert(isFunction(func), `${name} is not a function!`);
+  Object.keys(functions).forEach(handlerName => {
+    const func = functions[handlerName];
+    assert(isFunction(func), `${handlerName} is not a function!`);
 
     const builder = !func.hasOwnProperty("handlerType") ? createActionBuilder(func) : func;
-    let [action, handler] = builder({reducerName, name, tag, getReducerState, getHandlers});
+    let [action, handler] = builder({reducerName, handlerName, tag, getReducerState, getHandlers});
 
-    actions[name] = action;
-    handlers[name] = handler;
+    actions[handlerName] = action;
+    handlers[handlerName] = handler;
   });
 
   return {actions, handlers};
