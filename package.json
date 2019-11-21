@@ -4,7 +4,7 @@
   "description": "A concise way to create Redux reducers!",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --verbose",
     "test:perf": "babel-node ./tests/perf/createReducer.js"
   },
   "repository": {
@@ -20,18 +20,29 @@
     "target": "es6"
   },
   "jest": {
-    "setupFiles": ["jest-localstorage-mock"]
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>tests/integration/setup.js"
+    ]
   },
   "homepage": "https://github.com/sreenaths/xreducer#readme",
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/node": "^7.7.0",
     "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
     "babel-jest": "^24.9.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
     "immer": "^5.0.0",
     "immutability-helper": "^3.0.1",
     "jest": "^24.9.0",
     "jest-localstorage-mock": "^2.4.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.1.3",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0"
   },
