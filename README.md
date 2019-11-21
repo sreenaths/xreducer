@@ -2,11 +2,11 @@
 
 Create Redux reducers without switch statements or action objects. Less boilerplate, more fun!
 
-xReducer is just a syntactic sugar, and have literally zero dependencies, not even Redux! So you can right away use it in your Redux project alongside existing reducers.
+xReducer is just a syntactic sugar, and have literally zero hard dependencies, not even Redux! So you can right away use it in your Redux project alongside existing reducers.
 
 ## How To Install
 ```js
-npm install xreducer
+npm install --save xreducer
 ```
 or
 ```js
