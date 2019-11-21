@@ -5,9 +5,9 @@ const ITERATIONS = 1000000;
 
 // -- Helpers ---------------------------------------------
 function executor(fun) {
-  const start = Date.now();
+  const start = process.hrtime.bigint();
   const state = fun();
-  const duration = Date.now() - start;
+  const duration = (process.hrtime.bigint() - start) / BigInt(1000000);
   return [state, duration];
 }
 

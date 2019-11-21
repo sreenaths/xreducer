@@ -65,6 +65,7 @@ function bindActions(actions, dispatch) {
   Object.keys(actions).forEach(name => {
     actionsObj[name] = actions[name].bind(actionsObj, dispatch);
   });
+  Object.freeze(actionsObj);
   return actionsObj;
 }
 

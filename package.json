@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --verbose",
-    "test:perf": "babel-node ./tests/perf/createReducer.js"
+    "test:perf": "babel-node ./tests/perf/compareActionCalls.js"
   },
   "repository": {
     "type": "git",

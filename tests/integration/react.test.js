@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import App from './dummy-counter-app/app';
 
-describe('Integration: Positive tests', () => {
+describe('Integration tests on React', () => {
   let wrapper;
 
   function clickIncButton() {
