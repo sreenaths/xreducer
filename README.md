@@ -59,6 +59,11 @@ export default connect(
   reducer.getActions
 )(Counter);
 ```
+### More Information On Usage
+I am trying best to improve the documentation. But until then, the UTs must give you a sound idea about xReducer APIs and supported features.
+
+**We have UTs for reducer composition, Immer support, persisting data using localStorage, debouncing actions, thunk support etc.**
+
 ## License
 
 This project is licensed under the MIT license. See the LICENSE file for more info.
