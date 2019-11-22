@@ -1,4 +1,4 @@
-import { createReducer } from '../../../index';
+import { createReducer } from '../../index';
 
 const initialState = {
   count: 1

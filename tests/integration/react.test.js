@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import App from './dummy-counter-app/app';
+import App from './app';
 
 describe('Integration tests on React', () => {
   let wrapper;
