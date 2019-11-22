@@ -48,14 +48,12 @@ export default createReducer({
 // components/counter.js
 class Counter extends React.Component {
   render() {
-    // ...
+    return <p>{this.props.count}</p>
   }
 }
 
 export default connect(
-  state => {
-    return {count: state};
-  },
+  state => ({count: state}),
   reducer.getActions
 )(Counter);
 ```
