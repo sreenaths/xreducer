@@ -55,7 +55,7 @@ xReducer supports 3 types of action handlers. Default is action().
 
 1. [action((state, payload) => {}, options)](https://github.com/sreenaths/xreducer/blob/master/tests/unit/action.test.js) - Executes inside the reducer and manages state.
 2. [func((actions, getReducerState, payload, helpers) => {}, options)](https://github.com/sreenaths/xreducer/blob/master/tests/unit/func.test.js) - Executes outside, for side effects logic without dispatch.
-3. [reduxThunk((actions, getState, payload, helpers) => {}, options)](https://github.com/sreenaths/xreducer/blob/master/tests/unit/reduxThunk.test.js) - For side effects logic with dispatch **(redux-thunk)**.
+3. [reduxThunk((actions, getState, payload, helpers) => {}, options)](https://github.com/sreenaths/xreducer/blob/master/tests/unit/reduxThunk.test.js) - For side effects logic with dispatch **(Needs redux-thunk middleware)**.
 
 ## Feature Support
 I am trying my best to improve the documentation. But until then, the UTs must give you a sound idea about xReducer APIs and supported features.
