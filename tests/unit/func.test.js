@@ -120,25 +120,4 @@ describe('Unit Test : func() creation', () => {
     }, 200);
   });
 
-  test('In debugMode', (done) => {
-    let reducer = createReducer({
-      act: func(() => {})
-    }, null, {reducerName: "testReducer", debugMode: true});
-
-    expect.assertions(1);
-
-    function middleMan({ getState }) {
-      return next => action => {
-        expect(action.type).toBe("@FUNC.testReducer.act");
-        done();
-        return next(action)
-      }
-    }
-
-    let store = createStore(reducer, applyMiddleware(middleMan));
-    let actions = reducer.getActions(store.dispatch);
-
-    actions.act();
-  });
-
 });

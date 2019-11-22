@@ -10,14 +10,8 @@ const HANDLER_TYPE = "FUNC";
 function createFuncBuilder(handler, {debounceWait} = {}) {
   assert(isFunction(handler), "Handler is not a function!");
 
-  return setupBuilder(function({reducerName, handlerName, getReducerState, getHandlers, debugMode}) {
-    const type = createDispatchType(HANDLER_TYPE, reducerName, handlerName);
-
+  return setupBuilder(function({getReducerState, getHandlers}) {
     let func = function(dispatch, payload) {
-      if(debugMode) {
-        dispatch({type, payload});
-      }
-
       const helpers = {
         dispatch
       };

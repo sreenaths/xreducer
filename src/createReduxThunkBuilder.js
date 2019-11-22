@@ -10,16 +10,10 @@ const HANDLER_TYPE = "THUNK";
 function createReduxThunkBuilder(handler, {debounceWait} = {}) {
   assert(isFunction(handler), "Handler is not a function!");
 
-  return setupBuilder(function({reducerName, handlerName, getHandlers, debugMode}) {
-    const type = createDispatchType(HANDLER_TYPE, reducerName, handlerName);
-
+  return setupBuilder(function({getHandlers}) {
     let reduxThunk = function(dispatch, payload) {
       const actions = this;
       dispatch(function(dispatch, getState) {
-        if(debugMode) {
-          dispatch({type, payload});
-        }
-
         const helpers = {
           dispatch
         };
