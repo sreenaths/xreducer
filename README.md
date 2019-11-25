@@ -14,7 +14,7 @@ Redux is an awesome library, but it makes us write a lot of boilerplate - Action
 What if we could avoid some of them, and create reducers from a set of simple functions / handlers / actions!?
 
 ## Using With ReactJs
-**1. Reducer:** Calling createReducer with a map of action handlers, and the initial state; would return a reducer function. You can then use this function with Redux like a conventional reducer.
+**1. Reducer:** Calling **createReducer** with a map of action handlers, and the initial state; would return a reducer function. You can then use this function with Redux like a conventional reducer.
 ```js
 // Reducer
 import { createReducer } from 'xreducer';
@@ -57,7 +57,7 @@ xReducer supports 3 types of action handlers. Default is action().
 2. [func((actions, getReducerState, payload, helpers) => {}, options)](https://github.com/sreenaths/xreducer/blob/master/tests/unit/func.test.js) - Executes outside, for side effects logic without dispatch.
 3. [reduxThunk((actions, getState, payload, helpers) => {}, options)](https://github.com/sreenaths/xreducer/blob/master/tests/unit/reduxThunk.test.js) - For side effects logic with dispatch **(Needs redux-thunk middleware)**.
 
-## Feature Support
+## Supported Features
 I am trying my best to improve the documentation. But until then, the UTs must give you a sound idea about xReducer APIs and supported features.
 
 Unit Tests for some interesting features:
@@ -66,6 +66,11 @@ Unit Tests for some interesting features:
 3. [Persisting data using localStorage](https://github.com/sreenaths/xreducer/blob/master/tests/unit/createReducer/onStateChange.test.js#L106)
 4. [Debouncing actions](https://github.com/sreenaths/xreducer/blob/master/tests/unit/action.test.js#L50)
 5. [Thunk support](https://github.com/sreenaths/xreducer/blob/master/tests/unit/reduxThunk.test.js)
+
+## Contributions & Bug Report
+
+- Do you have an enhancement in mind? Or found a bug? Please create a new issue for the same [in xReducer issues page](https://github.com/sreenaths/xreducer/issues).
+- And always, feel free to submit a Pull Request with the changes you would like to see.
 
 ## License
 
@@ -87,4 +92,5 @@ This project is licensed under the MIT license. See the LICENSE file for more in
 - Perf analysis
 
 - Will will do the dispatching for you
+- Compose computed properties in reducer class using that 3rd party dep
 -->
