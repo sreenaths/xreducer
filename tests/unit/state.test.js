@@ -1,7 +1,7 @@
 import { createReducer } from '../../index';
 import { createStore } from 'redux';
 
-import initialStateObj from './data/users';
+import initialStateObj from './test-data/users';
 
 describe('Unit Test : State as Primitive data type', () => {
 

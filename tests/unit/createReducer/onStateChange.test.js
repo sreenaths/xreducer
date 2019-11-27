@@ -3,9 +3,9 @@ import { createStore } from 'redux';
 
 import produce from "immer";
 import update from 'immutability-helper';
-import {createStorageReducer, getStorageState} from "../helpers/localStorage";
+import {createStorageReducer, getStorageState} from "../test-helpers/localStorage";
 
-import initialStateObj from '../data/users';
+import initialStateObj from '../test-data/users';
 
 describe('Unit Test : onStateChange attribute of createReducer()', () => {
 

@@ -1,7 +1,7 @@
 import createReducer from './src/createReducer';
-import createFuncBuilder from './src/createFuncBuilder';
-import createActionBuilder from './src/createActionBuilder';
-import createReduxThunkBuilder from './src/createReduxThunkBuilder';
+import createFuncBuilder from './src/builders/createFuncBuilder';
+import createActionBuilder from './src/builders/createActionBuilder';
+import createReduxThunkBuilder from './src/builders/createReduxThunkBuilder';
 
 export {
   createReducer,

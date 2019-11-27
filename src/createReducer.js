@@ -1,7 +1,7 @@
 import isFunction from './helpers/isFunction';
 import assert from './helpers/assert';
 
-import createActionBuilder from './createActionBuilder';
+import createActionBuilder from './builders/createActionBuilder';
 
 function createReducer(functions, initialState, {reducerName, onStateChange} = {}) {
   Object.freeze(functions);

@@ -1,9 +1,8 @@
-import isFunction from './helpers/isFunction';
-import assert from './helpers/assert';
-import createDispatchType from './helpers/createDispatchType';
-import debounce from './helpers/debounce';
+import isFunction from '../helpers/isFunction';
+import assert from '../helpers/assert';
+import debounce from '../helpers/debounce';
 
-import setupBuilder from './helpers/setupBuilder';
+import setupBuilder from '../helpers/setupBuilder';
 
 const HANDLER_TYPE = "THUNK";
 
