@@ -75,22 +75,3 @@ Unit Tests for some interesting features:
 ## License
 
 This project is licensed under the MIT license. See the LICENSE file for more info.
-
-
-<!--
-- Installation
-- Basic
-  - Explain - Handler, Action, Thunk
-- Consume state & getActions
-- combined reducer
-- Using Immutable Helpers
-  - Using Immer
-  - Using Immutability Helper
-- Custom type
-- thunks
-- Handlers object is frozen
-- Perf analysis
-
-- Will will do the dispatching for you
-- Compose computed properties in reducer class using that 3rd party dep
--->
