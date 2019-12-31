@@ -35,21 +35,21 @@ describe('Unit Test : createReducer()', () => {
       createReducer({
         propNum: 1
       });
-    }).toThrow(/propNum is not a function/);
+    }).toThrow(/Action propNum is invalid!/);
   
     expect(() => {
       createReducer({
         fun: () => {},
         propStr: "abc",
       });
-    }).toThrow(/propStr is not a function/);
+    }).toThrow(/Action propStr is invalid!/);
   
     expect(() => {
       createReducer({
         fun: () => {},
         propObj: {},
       });
-    }).toThrow(/propObj is not a function/);
+    }).toThrow(/Action propObj is invalid!/);
   });
 
 });

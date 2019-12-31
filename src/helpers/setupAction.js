@@ -2,14 +2,17 @@ import debounce from '../helpers/debounce';
 import assert from '../helpers/assert';
 import isFunction from '../helpers/isFunction';
 
-function setupAction(action, handler, debounceWait) {
+function setupAction(method, handler, debounceWait) {
   assert(isFunction(handler), "Handler is not a function!");
 
   if(debounceWait) {
-    action = debounce(action, debounceWait);
+    method = debounce(method, debounceWait);
   }
 
-  action.handler = handler;
+  const action = {
+    method,
+    handler
+  };
   Object.freeze(action);
   return action;
 }

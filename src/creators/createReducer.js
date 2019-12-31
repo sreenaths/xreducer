@@ -56,11 +56,12 @@ function normalizeActions(actions) {
   var normalized = {};
   Object.keys(actions).forEach(name => {
     let action = actions[name];
-    assert(isFunction(action), `Action ${name} is not a function!`);
 
-    if(!action.handler) {
+    if(isFunction(action)) {
       action = createStateAction(action);
     }
+
+    assert(isFunction(action.method) && isFunction(action.handler), `Action ${name} is invalid!`);
 
     normalized[name] = action;
   });
@@ -88,7 +89,7 @@ function bindActions(actions, dispatch, reducerProps) {
 
       getActions: () => boundedActions
     };
-    boundedActions[name] = actions[name].bind(actionContext);
+    boundedActions[name] = actions[name].method.bind(actionContext);
   });
   Object.freeze(boundedActions);
   return boundedActions;

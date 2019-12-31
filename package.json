@@ -1,6 +1,6 @@
 {
   "name": "xreducer",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Create Redux reducers without switch statements or action objects. Less boilerplate, more fun!",
   "main": "index.js",
   "scripts": {
