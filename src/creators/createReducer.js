@@ -9,6 +9,7 @@ function createReducer(actions, initialState, {reducerName, onStateChange} = {})
   let currentReducerState;
   const getReducerState = () => currentReducerState;
 
+  initialState = initialState || null;
   actions = normalizeActions(actions);
   onStateChange = normalizeOnStateChange(onStateChange);
 
